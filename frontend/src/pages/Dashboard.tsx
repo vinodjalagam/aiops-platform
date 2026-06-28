@@ -5,6 +5,7 @@ import AIInsights from "../components/dashboard/AIInsights";
 import ClusterHealth from "../components/dashboard/ClusterHealth";
 import EventTimeline from "../components/dashboard/EventTimeline";
 import { useDashboard } from "../hooks/useDashboard";
+import { useNavigate } from "react-router-dom";
 
 import {
   Server,
@@ -17,6 +18,7 @@ import {
 
 export default function Dashboard() {
   const { dashboard, loading } = useDashboard();
+  const navigate = useNavigate();
 
   if (loading) {
     return (
@@ -57,53 +59,57 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-3 gap-6">
+
         <KpiCard
           title="Nodes"
           value={dashboard?.nodes.toString() || "0"}
           color="text-green-400"
-          trend="+2 since yesterday"
+          trend="Live from Kubernetes"
           icon={<Server className="text-green-400" />}
+          onClick={() => navigate("/nodes")}
         />
 
         <KpiCard
           title="Pods"
           value={dashboard?.pods.toString() || "0"}
           color="text-blue-400"
-          trend="+8 this week"
+          trend="Live from Kubernetes"
           icon={<Box className="text-blue-400" />}
+          onClick={() => navigate("/pods")}
         />
 
         <KpiCard
           title="Alerts"
           value={dashboard?.alerts.toString() || "0"}
           color="text-red-400"
-          trend="-3 resolved"
+          trend="Cluster Alerts"
           icon={<Bell className="text-red-400" />}
         />
 
         <KpiCard
           title="CPU Usage"
-          value={`${dashboard?.cpu ?? 0}%`}
+          value={`${dashboard?.cpu || 0}%`}
           color="text-yellow-400"
-          trend="-5% today"
+          trend="Metrics Server (Coming Soon)"
           icon={<Cpu className="text-yellow-400" />}
         />
 
         <KpiCard
           title="Memory"
-          value={`${dashboard?.memory ?? 0}%`}
+          value={`${dashboard?.memory || 0}%`}
           color="text-purple-400"
-          trend="+4 GB available"
+          trend="Metrics Server (Coming Soon)"
           icon={<MemoryStick className="text-purple-400" />}
         />
 
         <KpiCard
           title="Cluster Health"
-          value={`${dashboard?.cluster_health ?? 0}%`}
+          value={`${dashboard?.cluster_health || 0}%`}
           color="text-green-500"
-          trend="All systems healthy"
+          trend="Live Cluster Status"
           icon={<HeartPulse className="text-green-400" />}
         />
+
       </div>
 
       <div className="grid grid-cols-2 gap-6 mt-8">

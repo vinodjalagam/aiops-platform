@@ -1,3 +1,4 @@
+import { NavLink } from "react-router-dom";
 import {
   LayoutDashboard,
   Server,
@@ -12,53 +13,53 @@ import {
 } from "lucide-react";
 
 const menuItems = [
-  { name: "Dashboard", icon: LayoutDashboard },
-  { name: "Cluster", icon: Server },
-  { name: "Nodes", icon: Boxes },
-  { name: "Pods", icon: Box },
-  { name: "Metrics", icon: Activity },
-  { name: "Logs", icon: FileText },
-  { name: "Incidents", icon: AlertTriangle },
-  { name: "Alerts", icon: Bell },
-  { name: "AI Assistant", icon: Bot },
-  { name: "Settings", icon: Settings },
+  { name: "Dashboard", path: "/", icon: LayoutDashboard },
+  { name: "Cluster", path: "/cluster", icon: Server },
+  { name: "Nodes", path: "/nodes", icon: Boxes },
+  { name: "Pods", path: "/pods", icon: Box },
+  { name: "Metrics", path: "/metrics", icon: Activity },
+  { name: "Logs", path: "/logs", icon: FileText },
+  { name: "Incidents", path: "/incidents", icon: AlertTriangle },
+  { name: "Alerts", path: "/alerts", icon: Bell },
+  { name: "AI Assistant", path: "/assistant", icon: Bot },
+  { name: "Settings", path: "/settings", icon: Settings },
 ];
 
 export default function Sidebar() {
   return (
     <aside className="w-64 h-screen bg-slate-900 text-white border-r border-slate-800">
-      <div className="flex items-center gap-3">
-    <div className="bg-blue-600 rounded-xl p-3">
-        🤖
-    </div>
+      <div className="flex items-center gap-3 p-6">
+        <div className="bg-blue-600 rounded-xl p-3">🤖</div>
 
-    <div>
-        <h1 className="text-2xl font-bold">
-            AIOps
-        </h1>
+        <div>
+          <h1 className="text-2xl font-bold">AIOps</h1>
 
-        <p className="text-slate-400 text-sm">
+          <p className="text-slate-400 text-sm">
             Kubernetes Intelligence
-        </p>
-    </div>
-</div>
+          </p>
+        </div>
+      </div>
 
-      <nav className="px-3">
+      <nav className="px-3 space-y-2">
         {menuItems.map((item) => {
           const Icon = item.icon;
 
           return (
-            <button
+            <NavLink
               key={item.name}
-                className={`flex items-center gap-3 w-full px-4 py-3 rounded-lg transition
-                ${
-                item.name === "Dashboard"
+              to={item.path}
+              end={item.path === "/"}
+              className={({ isActive }) =>
+                `flex items-center gap-3 w-full px-4 py-3 rounded-lg transition ${
+                  isActive
                     ? "bg-blue-600 text-white"
                     : "hover:bg-slate-800 text-slate-300"
-                }`}            >
+                }`
+              }
+            >
               <Icon size={20} />
               <span>{item.name}</span>
-            </button>
+            </NavLink>
           );
         })}
       </nav>

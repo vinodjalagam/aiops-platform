@@ -1,6 +1,6 @@
 import Sidebar from "./Sidebar";
 import Header from "./Header";
-import Dashboard from "../../pages/Dashboard";
+import { Outlet } from "react-router-dom";
 
 export default function Layout() {
   return (
@@ -9,7 +9,7 @@ export default function Layout() {
 
       <div className="flex flex-col flex-1">
         <Header />
-        <Dashboard />
+        <Outlet />
       </div>
     </div>
   );

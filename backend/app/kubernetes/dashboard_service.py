@@ -1,4 +1,3 @@
-from concurrent.futures import ThreadPoolExecutor
 from app.kubernetes.client import core_v1
 
 
@@ -7,12 +6,8 @@ class DashboardService:
     @staticmethod
     def get_dashboard():
 
-        with ThreadPoolExecutor() as executor:
-            nodes_future = executor.submit(core_v1.list_node)
-            pods_future = executor.submit(core_v1.list_pod_for_all_namespaces)
-
-            nodes = nodes_future.result().items
-            pods = pods_future.result().items
+        nodes = core_v1.list_node().items
+        pods = core_v1.list_pod_for_all_namespaces().items
 
         total_nodes = len(nodes)
         total_pods = len(pods)

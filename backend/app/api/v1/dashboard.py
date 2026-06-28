@@ -1,14 +1,10 @@
 from fastapi import APIRouter
 
-from app.schemas.dashboard import DashboardResponse
-from app.services.dashboard_service import DashboardService
+from app.kubernetes.dashboard_service import DashboardService
 
-router = APIRouter(
-    prefix="/dashboard",
-    tags=["Dashboard"],
-)
+router = APIRouter()
 
 
-@router.get("", response_model=DashboardResponse)
+@router.get("/dashboard")
 def get_dashboard():
     return DashboardService.get_dashboard()

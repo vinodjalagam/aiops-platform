@@ -1,0 +1,63 @@
+import { useNodes } from "../hooks/useNodes";
+
+export default function Nodes() {
+  const { nodes, loading } = useNodes();
+
+  if (loading) {
+    return (
+      <main className="flex-1 bg-slate-950 flex items-center justify-center">
+        <h1 className="text-white text-2xl">Loading Nodes...</h1>
+      </main>
+    );
+  }
+
+  return (
+    <main className="flex-1 bg-slate-950 p-6">
+      <h1 className="text-3xl font-bold text-white mb-6">
+        Kubernetes Nodes
+      </h1>
+
+      <div className="bg-slate-900 rounded-xl border border-slate-800 overflow-hidden">
+        <table className="w-full">
+          <thead className="bg-slate-800">
+            <tr>
+              <th className="text-left p-4 text-slate-300">Name</th>
+              <th className="text-left p-4 text-slate-300">Role</th>
+              <th className="text-left p-4 text-slate-300">Status</th>
+              <th className="text-left p-4 text-slate-300">Version</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {nodes.map((node) => (
+              <tr
+                key={node.name}
+                className="border-t border-slate-800"
+              >
+                <td className="p-4 text-white">{node.name}</td>
+
+                <td className="p-4 text-slate-300">
+                  {node.role}
+                </td>
+
+                <td
+                  className={`p-4 ${
+                    node.status === "Ready"
+                      ? "text-green-400"
+                      : "text-red-400"
+                  }`}
+                >
+                  {node.status}
+                </td>
+
+                <td className="p-4 text-slate-300">
+                  {node.version}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </main>
+  );
+}
