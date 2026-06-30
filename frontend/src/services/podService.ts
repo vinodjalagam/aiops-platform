@@ -3,6 +3,15 @@ import type { Pod } from "../types/pod";
 
 const API = import.meta.env.VITE_API_URL;
 
+export interface PodEvent {
+  type: string;
+  reason: string;
+  message: string;
+  count: number;
+  first_timestamp: string | null;
+  last_timestamp: string | null;
+}
+
 export const getPods = async (): Promise<Pod[]> => {
   const response = await axios.get<Pod[]>(`${API}/pods`);
   return response.data;
@@ -30,6 +39,20 @@ export const getPodLogs = async (
 
   return response.data;
 };
+
+export const getPodEvents = async (
+  namespace: string,
+  name: string,
+): Promise<PodEvent[]> => {
+
+  const response = await axios.get<PodEvent[]>(
+    `${API}/pods/${namespace}/${name}/events`
+  );
+
+  return response.data;
+
+};
+
 export const deletePod = async (
   namespace: string,
   name: string,

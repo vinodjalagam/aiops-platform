@@ -87,50 +87,93 @@ export default function Dashboard() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
 
-        <KpiCard
-          title="Nodes"
-          value={dashboard?.nodes.toString() || "0"}
-          color="text-green-400"
-          trend="Live from Kubernetes"
-          icon={<Server className="text-green-400" />}
-          onClick={() => navigate("/nodes")}
-        />
+<KpiCard
+  title="Nodes"
+  value={
+    dashboard
+      ? `${dashboard.nodes.ready}/${dashboard.nodes.total}`
+      : "0/0"
+  }
+  color="text-green-400"
+  trend="Ready Nodes"
+  icon={<Server className="text-green-400" />}
+  onClick={() => navigate("/nodes")}
+/>
+<KpiCard
+  title="Pods"
+  value={
+    dashboard
+      ? `${dashboard.pods.running}/${dashboard.pods.total}`
+      : "0/0"
+  }
+  color="text-blue-400"
+  trend="Running Pods"
+  icon={<Box className="text-blue-400" />}
+  onClick={() => navigate("/pods")}
+/>
+<KpiCard
+  title="Deployments"
+  value={
+    dashboard
+      ? `${dashboard.deployments.available}/${dashboard.deployments.total}`
+      : "0/0"
+  }
+  color="text-indigo-400"
+  trend="Available"
+  icon={<Layers className="text-indigo-400" />}
+  onClick={() => navigate("/deployments")}
+/>
+<KpiCard
+  title="Services"
+  value={
+    dashboard
+      ? dashboard.services.total.toString()
+      : "0"
+  }
+  color="text-orange-400"
+  trend="Cluster Services"
+  icon={<Network className="text-orange-400" />}
+  onClick={() => navigate("/services")}
+/>
+<KpiCard
+  title="Namespaces"
+  value={
+    dashboard
+      ? dashboard.namespaces.total.toString()
+      : "0"
+  }
+  color="text-cyan-400"
+  trend="Cluster Namespaces"
+  icon={<Layers className="text-cyan-400" />}
+/>
 
-        <KpiCard
-          title="Pods"
-          value={dashboard?.pods.toString() || "0"}
-          color="text-blue-400"
-          trend="Live from Kubernetes"
-          icon={<Box className="text-blue-400" />}
-          onClick={() => navigate("/pods")}
-        />
+<KpiCard
+  title="Warnings"
+  value={
+    dashboard
+      ? dashboard.events.warning.toString()
+      : "0"
+  }
+  color="text-yellow-400"
+  trend="Kubernetes Events"
+  icon={<Bell className="text-yellow-400" />}
+/>
 
-        <KpiCard
-          title="Deployments"
-          value={dashboard?.deployments?.toString() || "0"}
-          color="text-indigo-400"
-          trend="Live from Kubernetes"
-          icon={<Layers className="text-indigo-400" />}
-          onClick={() => navigate("/deployments")}
-        />
-
-        <KpiCard
-          title="Services"
-          value={dashboard?.services?.toString() || "0"}
-          color="text-orange-400"
-          trend="Live from Kubernetes"
-          icon={<Network className="text-orange-400" />}
-          onClick={() => navigate("/services")}
-        />
-
-        <KpiCard
-          title="Alerts"
-          value={dashboard?.alerts?.toString() || "0"}
-          color="text-red-400"
-          trend="Cluster Alerts"
-          icon={<Bell className="text-red-400" />}
-        />
-
+<KpiCard
+  title="Critical Events"
+  value={
+    dashboard
+      ? dashboard.events.critical.toString()
+      : "0"
+  }
+  color={
+    dashboard?.events.critical
+      ? "text-red-400"
+      : "text-green-400"
+  }
+  trend="Cluster Critical Events"
+  icon={<Bell className="text-red-400" />}
+/>
         <KpiCard
           title="CPU Usage"
           value={`${dashboard?.cpu || 0}%`}
@@ -147,14 +190,54 @@ export default function Dashboard() {
           icon={<MemoryStick className="text-purple-400" />}
         />
 
-        <KpiCard
-          title="Cluster Health"
-          value={`${dashboard?.cluster_health || 100}%`}
-          color="text-green-400"
-          trend="Cluster Status"
-          icon={<HeartPulse className="text-green-400" />}
-        />
+<KpiCard
+  title="Restarting Pods"
+  value={
+    dashboard
+      ? dashboard.pods.restarting.toString()
+      : "0"
+  }
+  color={
+    dashboard?.pods.restarting
+      ? "text-yellow-400"
+      : "text-green-400"
+  }
+  trend="Container Restarts"
+  icon={<RefreshCw className="text-yellow-400" />}
+/>
 
+
+<KpiCard
+  title="Cluster Health"
+  value={
+    dashboard
+      ? dashboard.cluster_health.status
+      : "Healthy"
+  }
+  color={
+    dashboard?.cluster_health.status === "Critical"
+      ? "text-red-400"
+      : dashboard?.cluster_health.status === "Warning"
+      ? "text-yellow-400"
+      : "text-green-400"
+  }
+  trend={
+    dashboard
+      ? `${dashboard.cluster_health.score}% Healthy`
+      : "Cluster Status"
+  }
+icon={
+  <HeartPulse
+    className={
+      dashboard?.cluster_health.status === "Critical"
+        ? "text-red-400"
+        : dashboard?.cluster_health.status === "Warning"
+        ? "text-yellow-400"
+        : "text-green-400"
+    }
+  />
+}
+/>
       </div>
 
       {/* Charts */}

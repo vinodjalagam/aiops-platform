@@ -43,6 +43,39 @@ class PodService:
 
         containers = []
 
+        health = {
+            "ready": False,
+            "containers_ready": False,
+            "initialized": False,
+            "pod_scheduled": False,
+            "liveness_probe": "Not Configured",
+            "readiness_probe": "Not Configured",
+            "startup_probe": "Not Configured",
+        }
+
+        if pod.status.conditions:
+
+            for condition in pod.status.conditions:
+
+                if condition.type == "Ready":
+                    health["ready"] = (
+                        condition.status == "True"
+                    )
+
+                elif condition.type == "ContainersReady":
+                    health["containers_ready"] = (
+                        condition.status == "True"
+                    )
+
+                elif condition.type == "Initialized":
+                    health["initialized"] = (
+                        condition.status == "True"
+                    )
+
+                elif condition.type == "PodScheduled":
+                    health["pod_scheduled"] = (
+                        condition.status == "True"
+                    )
         for container in pod.spec.containers:
 
             containers.append(
@@ -53,6 +86,15 @@ class PodService:
                         port.container_port
                         for port in (container.ports or [])
                     ],
+                    "liveness_probe": (
+                        container.liveness_probe is not None
+                    ),
+                    "readiness_probe": (
+                        container.readiness_probe is not None
+                    ),
+                    "startup_probe": (
+                        container.startup_probe is not None
+                    ),
                 }
             )
 
@@ -80,6 +122,7 @@ class PodService:
             "restart_count": restart_count,
             "containers": containers,
             "conditions": conditions,
+            "health": health,
         }
     @staticmethod
     def get_pod_logs(
@@ -98,6 +141,52 @@ class PodService:
         return {
             "logs": logs,
         }
+
+    @staticmethod
+    def get_pod_events(
+        namespace: str,
+        name: str,
+    ):
+
+        field_selector = (
+            f"involvedObject.name={name},"
+            f"involvedObject.namespace={namespace}"
+        )
+
+        events = core_v1.list_namespaced_event(
+            namespace=namespace,
+            field_selector=field_selector,
+        ).items
+
+        result = []
+
+        for event in events:
+
+            result.append(
+                {
+                    "type": event.type,
+                    "reason": event.reason,
+                    "message": event.message,
+                    "count": event.count,
+                    "first_timestamp": (
+                        str(event.first_timestamp)
+                        if event.first_timestamp
+                        else None
+                    ),
+                    "last_timestamp": (
+                        str(event.last_timestamp)
+                        if event.last_timestamp
+                        else None
+                    ),
+                }
+            )
+
+        result.sort(
+            key=lambda x: x["last_timestamp"] or "",
+            reverse=True,
+        )
+
+        return result
     @staticmethod
     def delete_pod(
         namespace: str,
@@ -111,5 +200,7 @@ class PodService:
 
         return {
             "status": "success",
-            "message": f"Pod '{name}' deleted successfully.",
+            "message": (
+                f"Pod '{name}' deleted successfully."
+            ),
         }

@@ -1,7 +1,8 @@
 import { useServices } from "../hooks/useServices";
-
+import { useNavigate } from "react-router-dom";
 export default function Services() {
   const { services, loading } = useServices();
+  const navigate = useNavigate();
 
   if (loading) {
     return (
@@ -44,27 +45,39 @@ export default function Services() {
 
             {services.map((service) => (
 
-              <tr
-                key={`${service.namespace}-${service.name}`}
-                className="border-t border-slate-800 hover:bg-slate-800"
-              >
+<tr
+  key={`${service.namespace}-${service.name}`}
+  onClick={() =>
+    navigate(
+      `/services/${service.namespace}/${service.name}`
+    )
+  }
+  className="border-t border-slate-800 hover:bg-slate-800 cursor-pointer"
+>
 
-                <td className="p-4">{service.name}</td>
+  <td className="p-4">
+    {service.name}
+  </td>
 
-                <td className="p-4">{service.namespace}</td>
+  <td className="p-4">
+    {service.namespace}
+  </td>
 
-                <td className="p-4">{service.type}</td>
+  <td className="p-4">
+    {service.type}
+  </td>
 
-                <td className="p-4">{service.cluster_ip}</td>
+  <td className="p-4">
+    {service.cluster_ip}
+  </td>
 
-                <td className="p-4">
-                  {service.ports
-                    .map((p: any) => p.port)
-                    .join(", ")}
-                </td>
+  <td className="p-4">
+    {service.ports
+      .map((p: any) => p.port)
+      .join(", ")}
+  </td>
 
-              </tr>
-
+</tr>
             ))}
 
           </tbody>

@@ -30,7 +30,15 @@ def get_pod_logs(
         name,
         tail_lines,
     )
-
+@router.get("/pods/{namespace}/{name}/events")
+def get_pod_events(
+    namespace: str,
+    name: str,
+):
+    return PodService.get_pod_events(
+        namespace,
+        name,
+    )
 @router.delete("/pods/{namespace}/{name}")
 def delete_pod(
     namespace: str,

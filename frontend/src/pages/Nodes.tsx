@@ -1,7 +1,8 @@
 import { useNodes } from "../hooks/useNodes";
-
+import { useNavigate } from "react-router-dom";
 export default function Nodes() {
   const { nodes, loading } = useNodes();
+  const navigate = useNavigate();
 
   if (loading) {
     return (
@@ -30,31 +31,37 @@ export default function Nodes() {
 
           <tbody>
             {nodes.map((node) => (
-              <tr
-                key={node.name}
-                className="border-t border-slate-800"
-              >
-                <td className="p-4 text-white">{node.name}</td>
+            <tr
+  key={node.name}
+  onClick={() =>
+    navigate(`/nodes/${node.name}`)
+  }
+  className="border-t border-slate-800 hover:bg-slate-800 cursor-pointer"
+>
+  <td className="p-4 text-white">
+    {node.name}
+  </td>
 
-                <td className="p-4 text-slate-300">
-                  {node.role}
-                </td>
+  <td className="p-4 text-slate-300">
+    {node.role}
+  </td>
 
-                <td
-                  className={`p-4 ${
-                    node.status === "Ready"
-                      ? "text-green-400"
-                      : "text-red-400"
-                  }`}
-                >
-                  {node.status}
-                </td>
+  <td
+    className={`p-4 ${
+      node.status === "Ready"
+        ? "text-green-400"
+        : "text-red-400"
+    }`}
+  >
+    {node.status}
+  </td>
 
-                <td className="p-4 text-slate-300">
-                  {node.version}
-                </td>
-              </tr>
-            ))}
+  <td className="p-4 text-slate-300">
+    {node.version}
+  </td>
+</tr>
+		
+		))}
           </tbody>
         </table>
       </div>

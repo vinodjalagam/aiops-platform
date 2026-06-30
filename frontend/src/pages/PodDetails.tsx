@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import {
   getPod,
+  getPodEvents,
   deletePod,
 } from "../services/podService";
 
@@ -17,6 +18,25 @@ interface Condition {
   status: string;
 }
 
+interface PodEvent {
+  type: string;
+  reason: string;
+  message: string;
+  count: number;
+  first_timestamp: string | null;
+  last_timestamp: string | null;
+}
+
+interface Health {
+  ready: boolean;
+  containers_ready: boolean;
+  initialized: boolean;
+  pod_scheduled: boolean;
+  liveness_probe: string;
+  readiness_probe: string;
+  startup_probe: string;
+}
+
 interface Pod {
   name: string;
   namespace: string;
@@ -28,8 +48,8 @@ interface Pod {
   restart_count: number;
   containers: Container[];
   conditions: Condition[];
+  health: Health;
 }
-
 export default function PodDetails() {
 
   const navigate = useNavigate();
@@ -41,6 +61,8 @@ export default function PodDetails() {
 
   const [logs, setLogs] =
     useState("");
+  const [events, setEvents] =
+    useState<PodEvent[]>([]);
 
   const logsRef =
     useRef<HTMLPreElement>(null);
@@ -66,13 +88,34 @@ export default function PodDetails() {
     }
 
   };
+ const loadEvents = async (
+  namespace: string,
+  name: string,
+) => {
+
+  try {
+
+    const data = await getPodEvents(
+      namespace,
+      name,
+    );
+
+    setEvents(data);
+
+  } catch (error) {
+
+    console.error(error);
+
+  }
+
+};
 
   useEffect(() => {
 
     if (!namespace || !name) return;
 
     loadPod(namespace, name);
-
+    loadEvents(namespace, name);
     const socket = new WebSocket(
       `ws://localhost:8000/ws/logs/${namespace}/${name}`
     );
@@ -316,7 +359,8 @@ export default function PodDetails() {
                     ? "text-yellow-400"
                     : "text-green-400"
                 }`}
-              >
+              
+>
                 {pod.restart_count}
               </p>
 
@@ -325,7 +369,273 @@ export default function PodDetails() {
           </div>
 
         </div>
-        {/* Containers */}
+        
+        {/* Health Status */}
+
+        <div className="bg-slate-900 rounded-xl border border-slate-700 p-6">
+
+          <h2 className="text-xl font-semibold mb-6">
+            Health Status
+          </h2>
+
+          <div className="grid grid-cols-2 gap-6">
+
+            <div>
+
+              <p className="text-slate-400 mb-2">
+                Ready
+              </p>
+
+              <p className={pod.health.ready ? "text-green-400 font-semibold" : "text-red-400 font-semibold"}>
+                {pod.health.ready ? "Healthy" : "Not Ready"}
+              </p>
+
+            </div>
+
+            <div>
+
+              <p className="text-slate-400 mb-2">
+                Containers Ready
+              </p>
+
+              <p className={pod.health.containers_ready ? "text-green-400 font-semibold" : "text-red-400 font-semibold"}>
+                {pod.health.containers_ready ? "Healthy" : "Not Ready"}
+              </p>
+
+            </div>
+
+            <div>
+
+              <p className="text-slate-400 mb-2">
+                Initialized
+              </p>
+
+              <p className={pod.health.initialized ? "text-green-400 font-semibold" : "text-red-400 font-semibold"}>
+                {pod.health.initialized ? "Yes" : "No"}
+              </p>
+
+            </div>
+
+            <div>
+
+              <p className="text-slate-400 mb-2">
+                Pod Scheduled
+              </p>
+
+              <p className={pod.health.pod_scheduled ? "text-green-400 font-semibold" : "text-red-400 font-semibold"}>
+                {pod.health.pod_scheduled ? "Yes" : "No"}
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
+               {/* Probe Status */}
+
+        <div className="bg-slate-900 rounded-xl border border-slate-700 p-6">
+
+          <h2 className="text-xl font-semibold mb-6">
+            Probe Status
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+            {/* Liveness */}
+
+            <div className="border border-slate-700 rounded-lg p-5">
+
+              <p className="text-slate-400 mb-3">
+                Liveness Probe
+              </p>
+
+              <span
+                className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                  pod.health.liveness_probe === "Not Configured"
+                    ? "bg-slate-700 text-slate-300"
+                    : "bg-green-500/20 text-green-400"
+                }`}
+              >
+                {pod.health.liveness_probe}
+              </span>
+
+            </div>
+
+            {/* Readiness */}
+
+            <div className="border border-slate-700 rounded-lg p-5">
+
+              <p className="text-slate-400 mb-3">
+                Readiness Probe
+              </p>
+
+              <span
+                className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                  pod.health.readiness_probe === "Not Configured"
+                    ? "bg-slate-700 text-slate-300"
+                    : "bg-green-500/20 text-green-400"
+                }`}
+              >
+                {pod.health.readiness_probe}
+              </span>
+
+            </div>
+
+            {/* Startup */}
+
+            <div className="border border-slate-700 rounded-lg p-5">
+
+              <p className="text-slate-400 mb-3">
+                Startup Probe
+              </p>
+
+              <span
+                className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                  pod.health.startup_probe === "Not Configured"
+                    ? "bg-slate-700 text-slate-300"
+                    : "bg-green-500/20 text-green-400"
+                }`}
+              >
+                {pod.health.startup_probe}
+              </span>
+
+            </div>
+
+          </div>
+
+        </div>
+        {/* Pod Events */}
+
+        <div className="bg-slate-900 rounded-xl border border-slate-700 p-6">
+
+            <div className="flex justify-between items-center mb-6">
+
+  <div>
+
+    <h2 className="text-xl font-semibold">
+      Pod Events
+    </h2>
+
+    <p className="text-slate-400 text-sm mt-1">
+      Kubernetes Events Timeline
+    </p>
+
+  </div>
+
+  <button
+    onClick={() => {
+      if (namespace && name) {
+        loadEvents(namespace, name);
+      }
+    }}
+    className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition"
+  >
+    Refresh
+  </button>
+
+</div>
+          {events.length === 0 ? (
+
+            <p className="text-slate-400">
+              No events found.
+            </p>
+
+          ) : (
+
+	<div className="overflow-x-auto max-h-[350px] overflow-y-auto rounded-lg">
+              <table className="w-full">
+
+                <thead className="sticky top-0 bg-slate-900 z-10">
+
+                  <tr className="border-b border-slate-700">
+
+                    <th className="text-left py-3 px-2">
+                      Type
+                    </th>
+
+                    <th className="text-left py-3 px-2">
+                      Reason
+                    </th>
+
+                    <th className="text-left py-3 px-2">
+                      Message
+                    </th>
+
+                    <th className="text-left py-3 px-2">
+                      Count
+                    </th>
+
+                    <th className="text-left py-3 px-2">
+                      Last Seen
+                    </th>
+
+                  </tr>
+
+                </thead>
+
+                <tbody>
+
+                  {events.map((event, index) => (
+
+                    <tr
+                      key={index}
+                      className="border-b border-slate-800 hover:bg-slate-800"
+                    >
+
+                      <td className="py-3 px-2">
+			<span
+  className={`px-3 py-1 rounded-full text-xs font-semibold ${
+    event.type === "Normal"
+      ? "bg-green-500/20 text-green-400"
+      : event.type === "Warning"
+      ? "bg-yellow-500/20 text-yellow-400"
+      : "bg-red-500/20 text-red-400"
+  }`}
+>
+  {event.type}
+</span>
+                      </td>
+
+                      <td className="py-3 px-2 font-medium">
+                        {event.reason}
+                      </td>
+
+                      <td className="py-3 px-2 text-slate-300">
+
+                        {event.message}
+
+                      </td>
+
+                      <td className="py-3 px-2">
+
+                        {event.count}
+
+                      </td>
+
+                      <td className="py-3 px-2 text-slate-400">
+
+		{event.last_timestamp
+  			? new Date(
+      			event.last_timestamp
+    				).toLocaleString()
+  			: "N/A"}
+                      </td>
+
+                    </tr>
+
+                  ))}
+
+                </tbody>
+
+              </table>
+
+            </div>
+
+          )}
+
+        </div>
+
+{/* Containers */}
 
         <div className="bg-slate-900 rounded-xl border border-slate-700 p-6">
 

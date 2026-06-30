@@ -9,6 +9,8 @@ import Deployments from "./pages/Deployments";
 import DeploymentDetails from "./pages/DeploymentDetails";
 import Services from "./pages/Services";
 import PodDetails from "./pages/PodDetails";
+import NodeDetails from "./pages/NodeDetails";
+import ServiceDetails from "./pages/ServiceDetails";
 
 function App() {
   return (
@@ -18,7 +20,8 @@ function App() {
           <Route index element={<Dashboard />} />
           <Route path="namespaces"element={<Namespaces />} />
           <Route path="nodes" element={<Nodes />} />
-          <Route path="namespaces/:name" element={<NamespaceDetails />} />
+          <Route path="nodes/:name" element={<NodeDetails />} />
+	  <Route path="namespaces/:name" element={<NamespaceDetails />} />
 
           <Route path="pods" element={<Pods />} />
 	  <Route path="pods/:namespace/:name" element={<PodDetails />} />
@@ -31,6 +34,11 @@ function App() {
           />
 
           <Route path="services" element={<Services />} />
+
+	<Route
+  path="services/:namespace/:name"
+  element={<ServiceDetails />}
+/>
         </Route>
       </Routes>
     </BrowserRouter>

@@ -19,10 +19,22 @@ class DashboardService:
         total_pods = len(pods)
         total_deployments = len(deployments)
         total_services = len(services)
+        
+        namespaces = core_v1.list_namespace().items
+        total_namespaces = len(namespaces)
 
+        running_pods = 0
+        pending_pods = 0
+        failed_pods = 0
+        succeeded_pods = 0
+        restarting_pods = 0
+
+        available_deployments = 0
+        unavailable_deployments = 0
+        
         # Cluster Health
         ready_nodes = 0
-
+        
         for node in nodes:
             for condition in node.status.conditions:
                 if (
@@ -36,7 +48,47 @@ class DashboardService:
             if total_nodes > 0
             else 0
         )
+        # Pod Summary
 
+        for pod in pods:
+
+            if pod.status.phase == "Running":
+                running_pods += 1
+
+            elif pod.status.phase == "Pending":
+                pending_pods += 1
+
+            elif pod.status.phase == "Failed":
+                failed_pods += 1
+
+            elif pod.status.phase == "Succeeded":
+                succeeded_pods += 1
+
+            if pod.status.container_statuses:
+
+                for container in pod.status.container_statuses:
+
+                    restarting_pods += (
+                        container.restart_count
+                    )
+
+        # Deployment Summary
+
+        for deployment in deployments:
+
+            desired = deployment.spec.replicas or 0
+
+            available = (
+                deployment.status.available_replicas or 0
+            )
+
+            if available >= desired:
+
+                available_deployments += 1
+
+            else:
+
+                unavailable_deployments += 1
         cpu = 0
         memory = 0
 
@@ -134,14 +186,94 @@ class DashboardService:
 
         except Exception as e:
             print("Metrics Error:", e)
+        warning_events = 0
+        critical_events = 0
 
-        return {
-            "nodes": total_nodes,
-            "pods": total_pods,
-            "deployments": total_deployments,
-            "services": total_services,
+        try:
+
+            events = core_v1.list_event_for_all_namespaces().items
+
+            for event in events:
+
+                if event.type == "Warning":
+
+                    warning_events += 1
+
+                    if event.reason in [
+                        "Failed",
+                        "BackOff",
+                        "CrashLoopBackOff",
+                        "OOMKilled",
+                        "FailedMount",
+                        "ImagePullBackOff",
+                    ]:
+
+                        critical_events += 1
+
+        except Exception:
+
+            pass
+
+        health_status = "Healthy"
+
+        if (
+            unavailable_deployments > 0
+            or failed_pods > 0
+            or critical_events > 0
+        ):
+
+            health_status = "Critical"
+
+        elif (
+            pending_pods > 0
+            or restarting_pods > 0
+            or warning_events > 0
+        ):
+
+            health_status = "Warning"
+
+        if health_status == "Healthy":
+            cluster_health = 100
+
+        elif health_status == "Warning":
+            cluster_health = 75
+
+        else:
+            cluster_health = 40
+
+    return {
+            "nodes": {
+                "total": total_nodes,
+                "ready": ready_nodes,
+                "not_ready": total_nodes - ready_nodes,
+            },
+            "pods": {
+                "total": total_pods,
+                "running": running_pods,
+                "pending": pending_pods,
+                "failed": failed_pods,
+                "succeeded": succeeded_pods,
+                "restarting": restarting_pods,
+            },
+            "deployments": {
+                "total": total_deployments,
+                "available": available_deployments,
+                "unavailable": unavailable_deployments,
+            },
+            "services": {
+                "total": total_services,
+            },
+            "namespaces": {
+                "total": total_namespaces,
+            },
+            "events": {
+                "warning": warning_events,
+                "critical": critical_events,
+            },
             "cpu": cpu,
             "memory": memory,
-            "alerts": 0,
-            "cluster_health": cluster_health,
+            "cluster_health": {
+                "score": cluster_health,
+                "status": health_status,
+            },
         }
