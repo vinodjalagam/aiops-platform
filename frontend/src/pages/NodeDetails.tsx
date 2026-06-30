@@ -100,17 +100,16 @@ export default function NodeDetails() {
               Status
             </p>
 
-<span
-  className={`inline-block mt-2 px-3 py-1 rounded-full text-sm font-semibold ${
-    node.status === "True"
-      ? "bg-green-500/20 text-green-400"
-      : "bg-red-500/20 text-red-400"
-  }`}
->
-  {node.status === "True"
-    ? "Ready"
-    : "Not Ready"}
-</span>
+            <span
+              className={`inline-block mt-2 px-3 py-1 rounded-full text-sm font-semibold ${node.status === "True"
+                  ? "bg-green-500/20 text-green-400"
+                  : "bg-red-500/20 text-red-400"
+                }`}
+            >
+              {node.status === "True"
+                ? "Ready"
+                : "Not Ready"}
+            </span>
           </div>
 
           <div>
@@ -266,128 +265,127 @@ export default function NodeDetails() {
       </div>
 
 
-{/* Node Conditions */}
+      {/* Node Conditions */}
 
-<div className="bg-slate-900 rounded-xl border border-slate-700 p-6 mt-6">
+      <div className="bg-slate-900 rounded-xl border border-slate-700 p-6 mt-6">
 
-  <h2 className="text-xl font-semibold text-white mb-6">
-    Node Conditions
-  </h2>
+        <h2 className="text-xl font-semibold text-white mb-6">
+          Node Conditions
+        </h2>
 
-  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
 
-    {node.conditions.map((condition) => (
+          {node.conditions.map((condition) => (
 
-      <div
-        key={condition.type}
-        className="border border-slate-700 rounded-lg p-4"
-      >
+            <div
+              key={condition.type}
+              className="border border-slate-700 rounded-lg p-4"
+            >
 
-        <p className="text-slate-400">
-          {condition.type}
-        </p>
+              <p className="text-slate-400">
+                {condition.type}
+              </p>
 
-        <span
-          className={`inline-block mt-2 px-3 py-1 rounded-full text-sm font-semibold ${
-            condition.status === "True"
-              ? "bg-green-500/20 text-green-400"
-              : "bg-red-500/20 text-red-400"
-          }`}
-        >
-          {condition.status === "True"
-            ? "Healthy"
-            : "Unhealthy"}
-        </span>
+              <span
+                className={`inline-block mt-2 px-3 py-1 rounded-full text-sm font-semibold ${condition.status === "True"
+                    ? "bg-green-500/20 text-green-400"
+                    : "bg-red-500/20 text-red-400"
+                  }`}
+              >
+                {condition.status === "True"
+                  ? "Healthy"
+                  : "Unhealthy"}
+              </span>
 
-      </div>
+            </div>
 
-    ))}
-
-  </div>
-
-</div>
-
-{/* Labels */}
-
-<div className="bg-slate-900 rounded-xl border border-slate-700 p-6 mt-6">
-
-  <h2 className="text-xl font-semibold text-white mb-6">
-    Labels
-  </h2>
-
-  <div className="space-y-3">
-
-    {node.labels.map((label) => (
-
-      <div
-        key={label.key}
-        className="flex justify-between border-b border-slate-800 pb-2"
-      >
-
-        <span className="text-blue-400">
-          {label.key}
-        </span>
-
-        <span className="text-slate-300">
-          {label.value}
-        </span>
-
-      </div>
-
-    ))}
-
-  </div>
-
-</div>
-
-{/* Taints */}
-
-<div className="bg-slate-900 rounded-xl border border-slate-700 p-6 mt-6">
-
-  <h2 className="text-xl font-semibold text-white mb-6">
-    Taints
-  </h2>
-
-  {node.taints.length === 0 ? (
-
-    <p className="text-slate-400">
-      No taints configured.
-    </p>
-
-  ) : (
-
-    <div className="space-y-3">
-
-      {node.taints.map((taint, index) => (
-
-        <div
-          key={index}
-          className="border border-slate-700 rounded-lg p-4"
-        >
-
-          <p className="text-blue-400">
-            {taint.key}
-          </p>
-
-          <p className="text-slate-300 mt-2">
-            {taint.value || "-"}
-          </p>
-
-          <p className="text-yellow-400 mt-2">
-            {taint.effect}
-          </p>
+          ))}
 
         </div>
 
-      ))}
+      </div>
 
-    </div>
+      {/* Labels */}
 
-  )}
+      <div className="bg-slate-900 rounded-xl border border-slate-700 p-6 mt-6">
 
-</div>
+        <h2 className="text-xl font-semibold text-white mb-6">
+          Labels
+        </h2>
 
-	      {/* Running Pods */}
+        <div className="space-y-3">
+
+          {node.labels.map((label) => (
+
+            <div
+              key={label.key}
+              className="flex justify-between border-b border-slate-800 pb-2"
+            >
+
+              <span className="text-blue-400">
+                {label.key}
+              </span>
+
+              <span className="text-slate-300">
+                {label.value}
+              </span>
+
+            </div>
+
+          ))}
+
+        </div>
+
+      </div>
+
+      {/* Taints */}
+
+      <div className="bg-slate-900 rounded-xl border border-slate-700 p-6 mt-6">
+
+        <h2 className="text-xl font-semibold text-white mb-6">
+          Taints
+        </h2>
+
+        {node.taints.length === 0 ? (
+
+          <p className="text-slate-400">
+            No taints configured.
+          </p>
+
+        ) : (
+
+          <div className="space-y-3">
+
+            {node.taints.map((taint, index) => (
+
+              <div
+                key={index}
+                className="border border-slate-700 rounded-lg p-4"
+              >
+
+                <p className="text-blue-400">
+                  {taint.key}
+                </p>
+
+                <p className="text-slate-300 mt-2">
+                  {taint.value || "-"}
+                </p>
+
+                <p className="text-yellow-400 mt-2">
+                  {taint.effect}
+                </p>
+
+              </div>
+
+            ))}
+
+          </div>
+
+        )}
+
+      </div>
+
+      {/* Running Pods */}
 
 
       <div className="bg-slate-900 rounded-xl border border-slate-700 p-6 mt-6">
@@ -430,28 +428,27 @@ export default function NodeDetails() {
                 >
 
 
-			<td className="py-3">
+                  <td className="py-3">
 
-  <button
-    onClick={() =>
-      navigate(`/pods/${pod.namespace}/${pod.name}`)
-    }
-    className="text-blue-400 hover:text-blue-300 hover:underline"
-  >
-    {pod.name}
-  </button>
+                    <button
+                      onClick={() =>
+                        navigate(`/pods/${pod.namespace}/${pod.name}`)
+                      }
+                      className="text-blue-400 hover:text-blue-300 hover:underline"
+                    >
+                      {pod.name}
+                    </button>
 
-</td>
+                  </td>
                   <td className="py-3 text-slate-300">
                     {pod.namespace}
                   </td>
 
                   <td
-                    className={`py-3 ${
-                      pod.status === "Running"
+                    className={`py-3 ${pod.status === "Running"
                         ? "text-green-400"
                         : "text-yellow-400"
-                    }`}
+                      }`}
                   >
                     {pod.status}
                   </td>

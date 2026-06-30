@@ -241,7 +241,7 @@ class DashboardService:
         else:
             cluster_health = 40
 
-    return {
+        return {
             "nodes": {
                 "total": total_nodes,
                 "ready": ready_nodes,
