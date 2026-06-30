@@ -3,6 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.router import api_router
 
+
+from app.api.ws.logs import router as ws_logs_router
 app = FastAPI(
     title="AIOps Platform API",
     version="1.0.0",
@@ -23,6 +25,7 @@ app.add_middleware(
 )
 
 app.include_router(api_router)
+app.include_router(ws_logs_router)
 
 
 @app.get("/")

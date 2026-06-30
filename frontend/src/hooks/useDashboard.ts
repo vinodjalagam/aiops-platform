@@ -24,5 +24,9 @@ export function useDashboard() {
     return () => clearInterval(interval);
   }, []);
 
-  return { dashboard, loading };
+  return {
+    dashboard,
+    loading,
+    refresh: loadDashboard,
+  };
 }
