@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { RefreshCw, Search } from "lucide-react";
 import { useNamespaces } from "../hooks/useNamespaces";
-
+import Loading from "../components/common/Loading";
 export default function Namespaces() {
   const {
     namespaces,
@@ -20,16 +20,9 @@ export default function Namespaces() {
       .includes(search.toLowerCase())
   );
 
-  if (loading) {
-    return (
-      <main className="flex-1 bg-slate-950 flex items-center justify-center">
-        <h1 className="text-white text-2xl">
-          Loading Namespaces...
-        </h1>
-      </main>
-    );
-  }
-
+if (loading) {
+    return <Loading text="Loading Namespaces..." />;
+}
   return (
     <main className="flex-1 bg-slate-950 p-8">
 

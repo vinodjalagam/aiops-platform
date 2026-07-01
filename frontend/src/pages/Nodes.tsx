@@ -1,17 +1,13 @@
 import { useNodes } from "../hooks/useNodes";
 import { useNavigate } from "react-router-dom";
+import Loading from "../components/common/Loading";
 export default function Nodes() {
   const { nodes, loading } = useNodes();
   const navigate = useNavigate();
 
-  if (loading) {
-    return (
-      <main className="flex-1 bg-slate-950 flex items-center justify-center">
-        <h1 className="text-white text-2xl">Loading Nodes...</h1>
-      </main>
-    );
-  }
-
+if (loading) {
+    return <Loading text="Loading Nodes..." />;
+}
   return (
     <main className="flex-1 bg-slate-950 p-6">
       <h1 className="text-3xl font-bold text-white mb-6">

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import Loading from "../components/common/Loading";
 import {
   getDeployment,
   updateDeploymentImage,
@@ -160,13 +161,10 @@ export default function DeploymentDetails() {
 
 };
   
-  if (!deployment) {
-    return (
-      <div className="p-6 text-white">
-        Loading...
-      </div>
-    );
-  }
+if (!deployment) {
+    return <Loading text="Loading Deployment..." />;
+}
+
   return (
     <div className="p-6 text-white">
 

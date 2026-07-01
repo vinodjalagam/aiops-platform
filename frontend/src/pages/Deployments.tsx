@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getDeployments } from "../services/deploymentService";
-
+import Loading from "../components/common/Loading";
 interface Deployment {
   name: string;
   namespace: string;
@@ -33,14 +33,9 @@ export default function Deployments() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="p-6 text-white">
-        Loading deployments...
-      </div>
-    );
-  }
-
+if (loading) {
+    return <Loading text="Loading Deployments..." />;
+}
   return (
     <div className="p-6 text-white">
 

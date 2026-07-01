@@ -8,7 +8,11 @@ router = APIRouter()
 @router.get("/pods")
 def get_pods():
     return PodService.get_pods()
-
+#@router.get("/pods")
+#def get_pods():
+#    return {
+#        "status": "ok"
+#    }
 
 @router.get("/pods/{namespace}/{name}")
 def get_pod(

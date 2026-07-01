@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-
+import Loading from "../components/common/Loading";
 import {
   getNode,
   type NodeDetails,
@@ -43,20 +43,9 @@ export default function NodeDetails() {
 
   };
 
-  if (!node) {
-
-    return (
-      <main className="flex-1 bg-slate-950 flex items-center justify-center">
-
-        <h1 className="text-white text-2xl">
-          Loading Node...
-        </h1>
-
-      </main>
-    );
-
-  }
-
+if (!node) {
+    return <Loading text="Loading Node..." />;
+}
   return (
 
     <main className="flex-1 bg-slate-950 p-6">

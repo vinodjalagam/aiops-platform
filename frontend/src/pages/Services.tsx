@@ -1,17 +1,13 @@
 import { useServices } from "../hooks/useServices";
 import { useNavigate } from "react-router-dom";
+import Loading from "../components/common/Loading";
 export default function Services() {
   const { services, loading } = useServices();
   const navigate = useNavigate();
 
-  if (loading) {
-    return (
-      <div className="p-6 text-white">
-        Loading...
-      </div>
-    );
-  }
-
+if (loading) {
+    return <Loading text="Loading Services..." />;
+}
   return (
     <div className="p-6 text-white">
 

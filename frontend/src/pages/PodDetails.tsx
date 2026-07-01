@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-
+import Loading from "../components/common/Loading";
 import {
   getPod,
   getPodEvents,
@@ -185,22 +185,9 @@ export default function PodDetails() {
 
   };
 
-  if (!pod) {
-
-    return (
-
-      <main className="flex-1 bg-slate-950 flex items-center justify-center">
-
-        <h1 className="text-white text-2xl">
-          Loading Pod Details...
-        </h1>
-
-      </main>
-
-    );
-
-  }
-
+if (!pod) {
+    return <Loading text="Loading Pod..." />;
+}
   return (
 
     <main className="flex-1 bg-slate-950 p-8">

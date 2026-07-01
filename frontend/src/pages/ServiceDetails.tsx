@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-
+import Loading from "../components/common/Loading";
 import {
   getService,
   type ServiceDetails,
@@ -47,20 +47,9 @@ export default function ServiceDetails() {
 
   };
 
-  if (!service) {
-
-    return (
-      <main className="flex-1 bg-slate-950 flex items-center justify-center">
-
-        <h1 className="text-white text-2xl">
-          Loading Service...
-        </h1>
-
-      </main>
-    );
-
-  }
-
+if (!service) {
+    return <Loading text="Loading Service..." />;
+}
   return (
 
     <main className="flex-1 bg-slate-950 p-6">
