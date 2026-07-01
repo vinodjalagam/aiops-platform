@@ -1,12 +1,14 @@
-from app.kubernetes.client import core_v1
+from app.kubernetes.client import core_v1, async_core_v1
+from app.utils.cache import cached, pods_cache
+import asyncio
 
 
 class PodService:
 
     @staticmethod
-    def get_pods():
-
-        pods = core_v1.list_pod_for_all_namespaces().items
+    @cached(pods_cache, "pods")
+    async def get_pods_async():
+        pods = (await async_core_v1.list_pod_for_all_namespaces()).items
 
         result = []
 
@@ -24,12 +26,16 @@ class PodService:
         return result
 
     @staticmethod
-    def get_pod(
+    def get_pods():
+        """Synchronous wrapper for backward compatibility"""
+        return asyncio.run(PodService.get_pods_async())
+
+    @staticmethod
+    async def get_pod_async(
         namespace: str,
         name: str,
     ):
-
-        pod = core_v1.read_namespaced_pod(
+        pod = await async_core_v1.read_namespaced_pod(
             name=name,
             namespace=namespace,
         )
@@ -124,14 +130,22 @@ class PodService:
             "conditions": conditions,
             "health": health,
         }
+
     @staticmethod
-    def get_pod_logs(
+    def get_pod(
+        namespace: str,
+        name: str,
+    ):
+        """Synchronous wrapper for backward compatibility"""
+        return asyncio.run(PodService.get_pod_async(namespace, name))
+
+    @staticmethod
+    async def get_pod_logs_async(
         namespace: str,
         name: str,
         tail_lines: int = 100,
     ):
-
-        logs = core_v1.read_namespaced_pod_log(
+        logs = await async_core_v1.read_namespaced_pod_log(
             name=name,
             namespace=namespace,
             tail_lines=tail_lines,
@@ -143,20 +157,28 @@ class PodService:
         }
 
     @staticmethod
-    def get_pod_events(
+    def get_pod_logs(
+        namespace: str,
+        name: str,
+        tail_lines: int = 100,
+    ):
+        """Synchronous wrapper for backward compatibility"""
+        return asyncio.run(PodService.get_pod_logs_async(namespace, name, tail_lines))
+
+    @staticmethod
+    async def get_pod_events_async(
         namespace: str,
         name: str,
     ):
-
         field_selector = (
             f"involvedObject.name={name},"
             f"involvedObject.namespace={namespace}"
         )
 
-        events = core_v1.list_namespaced_event(
+        events = (await async_core_v1.list_namespaced_event(
             namespace=namespace,
             field_selector=field_selector,
-        ).items
+        )).items
 
         result = []
 
@@ -187,13 +209,21 @@ class PodService:
         )
 
         return result
+
     @staticmethod
-    def delete_pod(
+    def get_pod_events(
         namespace: str,
         name: str,
     ):
+        """Synchronous wrapper for backward compatibility"""
+        return asyncio.run(PodService.get_pod_events_async(namespace, name))
 
-        core_v1.delete_namespaced_pod(
+    @staticmethod
+    async def delete_pod_async(
+        namespace: str,
+        name: str,
+    ):
+        await async_core_v1.delete_namespaced_pod(
             name=name,
             namespace=namespace,
         )
@@ -204,3 +234,11 @@ class PodService:
                 f"Pod '{name}' deleted successfully."
             ),
         }
+
+    @staticmethod
+    def delete_pod(
+        namespace: str,
+        name: str,
+    ):
+        """Synchronous wrapper for backward compatibility"""
+        return asyncio.run(PodService.delete_pod_async(namespace, name))

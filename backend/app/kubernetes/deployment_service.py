@@ -1,12 +1,14 @@
-from app.kubernetes.client import apps_v1
+from app.kubernetes.client import apps_v1, async_apps_v1
+from app.utils.cache import cached, deployments_cache
+import asyncio
 
 
 class DeploymentService:
 
     @staticmethod
-    def get_deployments():
-
-        deployments = apps_v1.list_deployment_for_all_namespaces().items
+    @cached(deployments_cache, "deployments")
+    async def get_deployments_async():
+        deployments = (await async_apps_v1.list_deployment_for_all_namespaces()).items
 
         result = []
 
@@ -27,9 +29,13 @@ class DeploymentService:
         return result
 
     @staticmethod
-    def get_deployment(namespace: str, name: str):
+    def get_deployments():
+        """Synchronous wrapper for backward compatibility"""
+        return asyncio.run(DeploymentService.get_deployments_async())
 
-        deployment = apps_v1.read_namespaced_deployment(
+    @staticmethod
+    async def get_deployment_async(namespace: str, name: str):
+        deployment = await async_apps_v1.read_namespaced_deployment(
             name=name,
             namespace=namespace,
         )
@@ -58,13 +64,17 @@ class DeploymentService:
         }
 
     @staticmethod
-    def update_image(
+    def get_deployment(namespace: str, name: str):
+        """Synchronous wrapper for backward compatibility"""
+        return asyncio.run(DeploymentService.get_deployment_async(namespace, name))
+
+    @staticmethod
+    async def update_image_async(
         namespace: str,
         name: str,
         image: str,
     ):
-
-        deployment = apps_v1.read_namespaced_deployment(
+        deployment = await async_apps_v1.read_namespaced_deployment(
             name=name,
             namespace=namespace,
         )
@@ -73,7 +83,7 @@ class DeploymentService:
         for container in deployment.spec.template.spec.containers:
             container.image = image
 
-        apps_v1.patch_namespaced_deployment(
+        await async_apps_v1.patch_namespaced_deployment(
             name=name,
             namespace=namespace,
             body=deployment,
@@ -84,21 +94,30 @@ class DeploymentService:
             "message": f"Deployment '{name}' image updated successfully.",
             "image": image,
         }
+
     @staticmethod
-    def scale_deployment(
+    def update_image(
+        namespace: str,
+        name: str,
+        image: str,
+    ):
+        """Synchronous wrapper for backward compatibility"""
+        return asyncio.run(DeploymentService.update_image_async(namespace, name, image))
+
+    @staticmethod
+    async def scale_deployment_async(
         namespace: str,
         name: str,
         replicas: int,
     ):
-
-        deployment = apps_v1.read_namespaced_deployment(
+        deployment = await async_apps_v1.read_namespaced_deployment(
             name=name,
             namespace=namespace,
         )
 
         deployment.spec.replicas = replicas
 
-        apps_v1.patch_namespaced_deployment(
+        await async_apps_v1.patch_namespaced_deployment(
             name=name,
             namespace=namespace,
             body=deployment,
@@ -109,13 +128,22 @@ class DeploymentService:
             "message": f"Deployment '{name}' scaled successfully.",
             "replicas": replicas,
         }
+
     @staticmethod
-    def delete_deployment(
+    def scale_deployment(
+        namespace: str,
+        name: str,
+        replicas: int,
+    ):
+        """Synchronous wrapper for backward compatibility"""
+        return asyncio.run(DeploymentService.scale_deployment_async(namespace, name, replicas))
+
+    @staticmethod
+    async def delete_deployment_async(
         namespace: str,
         name: str,
     ):
-
-        apps_v1.delete_namespaced_deployment(
+        await async_apps_v1.delete_namespaced_deployment(
             name=name,
             namespace=namespace,
         )
@@ -124,3 +152,11 @@ class DeploymentService:
             "status": "success",
             "message": f"Deployment '{name}' deleted successfully.",
         }
+
+    @staticmethod
+    def delete_deployment(
+        namespace: str,
+        name: str,
+    ):
+        """Synchronous wrapper for backward compatibility"""
+        return asyncio.run(DeploymentService.delete_deployment_async(namespace, name))

@@ -6,5 +6,5 @@ router = APIRouter()
 
 
 @router.get("/dashboard")
-def get_dashboard():
-    return DashboardService.get_dashboard()
+async def get_dashboard():
+    return await DashboardService.get_dashboard_async()

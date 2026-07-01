@@ -9,9 +9,9 @@ router = APIRouter(
 
 
 @router.get("")
-def get_nodes():
+async def get_nodes():
     return NodeService.get_nodes()
 
 @router.get("/{name}")
-def get_node(name: str):
+async def get_node(name: str):
     return NodeService.get_node(name)

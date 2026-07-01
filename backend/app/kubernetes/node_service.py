@@ -90,21 +90,20 @@ class NodeService:
             "pods": node.status.allocatable.get("pods"),
         }
 
-        pods = core_v1.list_pod_for_all_namespaces().items
+        # Use field selector to get only pods on this node
+        field_selector = f"spec.nodeName={name}"
+        pods = core_v1.list_pod_for_all_namespaces(field_selector=field_selector).items
 
         running_pods = []
 
         for pod in pods:
-
-            if pod.spec.node_name == name:
-
-                running_pods.append(
-                    {
-                        "name": pod.metadata.name,
-                        "namespace": pod.metadata.namespace,
-                        "status": pod.status.phase,
-                    }
-                )
+            running_pods.append(
+                {
+                    "name": pod.metadata.name,
+                    "namespace": pod.metadata.namespace,
+                    "status": pod.status.phase,
+                }
+            )
 
         return {
             "name": node.metadata.name,

@@ -2,25 +2,41 @@ from app.kubernetes.client import (
     core_v1,
     apps_v1,
     client,
+    async_core_v1,
+    async_apps_v1,
 )
+from app.utils.cache import cached, dashboard_cache
+import asyncio
 
 
 class DashboardService:
 
     @staticmethod
-    def get_dashboard():
-
-        nodes = core_v1.list_node().items
-        pods = core_v1.list_pod_for_all_namespaces().items
-        deployments = apps_v1.list_deployment_for_all_namespaces().items
-        services = core_v1.list_service_for_all_namespaces().items
+    @cached(dashboard_cache, "dashboard")
+    async def get_dashboard_async():
+        """Async version with parallel API calls for better performance"""
+        # Make all API calls in parallel
+        nodes_task = async_core_v1.list_node()
+        pods_task = async_core_v1.list_pod_for_all_namespaces()
+        deployments_task = async_apps_v1.list_deployment_for_all_namespaces()
+        services_task = async_core_v1.list_service_for_all_namespaces()
+        namespaces_task = async_core_v1.list_namespace()
+        
+        # Execute all calls concurrently
+        nodes, pods, deployments, services, namespaces = await asyncio.gather(
+            nodes_task, pods_task, deployments_task, services_task, namespaces_task
+        )
+        
+        nodes = nodes.items
+        pods = pods.items
+        deployments = deployments.items
+        services = services.items
+        namespaces = namespaces.items
 
         total_nodes = len(nodes)
         total_pods = len(pods)
         total_deployments = len(deployments)
         total_services = len(services)
-        
-        namespaces = core_v1.list_namespace().items
         total_namespaces = len(namespaces)
 
         running_pods = 0
@@ -93,14 +109,14 @@ class DashboardService:
         memory = 0
 
         try:
-
             metrics_api = client.CustomObjectsApi()
-
-            metrics = metrics_api.list_cluster_custom_object(
+            metrics_task = asyncio.to_thread(
+                metrics_api.list_cluster_custom_object,
                 group="metrics.k8s.io",
                 version="v1beta1",
                 plural="nodes",
             )
+            metrics = await metrics_task
 
             total_cpu_usage = 0
             total_memory_usage = 0
@@ -190,8 +206,8 @@ class DashboardService:
         critical_events = 0
 
         try:
-
-            events = core_v1.list_event_for_all_namespaces().items
+            events_task = async_core_v1.list_event_for_all_namespaces()
+            events = (await events_task).items
 
             for event in events:
 
@@ -277,3 +293,8 @@ class DashboardService:
                 "status": health_status,
             },
         }
+
+    @staticmethod
+    def get_dashboard():
+        """Synchronous wrapper for backward compatibility"""
+        return asyncio.run(DashboardService.get_dashboard_async())

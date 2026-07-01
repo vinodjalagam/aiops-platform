@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getDeployments } from "../services/deploymentService";
 import Loading from "../components/common/Loading";
+
 interface Deployment {
   name: string;
   namespace: string;
@@ -33,12 +34,12 @@ export default function Deployments() {
     }
   };
 
-if (loading) {
+  if (loading) {
     return <Loading text="Loading Deployments..." />;
-}
+  }
+
   return (
     <div className="p-6 text-white">
-
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">
           Deployments
@@ -53,35 +54,21 @@ if (loading) {
       </div>
 
       <div className="bg-slate-900 rounded-lg overflow-hidden">
-
         <table className="w-full">
-
           <thead className="bg-slate-800">
-
             <tr>
-
               <th className="text-left p-4">Deployment</th>
-
               <th className="text-left p-4">Namespace</th>
-
               <th className="text-center p-4">Replicas</th>
-
               <th className="text-center p-4">Ready</th>
-
               <th className="text-center p-4">Available</th>
-
               <th className="text-center p-4">Updated</th>
-
               <th className="text-center p-4">Strategy</th>
-
             </tr>
-
           </thead>
 
           <tbody>
-
             {deployments.map((deployment) => (
-
               <tr
                 key={`${deployment.namespace}-${deployment.name}`}
                 className="border-t border-slate-700 hover:bg-slate-800 cursor-pointer"
@@ -91,45 +78,32 @@ if (loading) {
                   )
                 }
               >
-
                 <td className="p-4 font-medium">
                   {deployment.name}
                 </td>
-
                 <td className="p-4">
                   {deployment.namespace}
                 </td>
-
                 <td className="text-center">
                   {deployment.replicas}
                 </td>
-
                 <td className="text-center text-green-400">
                   {deployment.ready_replicas}
                 </td>
-
                 <td className="text-center text-blue-400">
                   {deployment.available_replicas}
                 </td>
-
                 <td className="text-center">
                   {deployment.updated_replicas}
                 </td>
-
                 <td className="text-center">
                   {deployment.strategy}
                 </td>
-
               </tr>
-
             ))}
-
           </tbody>
-
         </table>
-
       </div>
-
     </div>
   );
 }

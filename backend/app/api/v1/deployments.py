@@ -15,22 +15,22 @@ class ScaleDeploymentRequest(BaseModel):
 
 
 @router.get("/")
-def get_deployments():
-    return DeploymentService.get_deployments()
+async def get_deployments():
+    return await DeploymentService.get_deployments_async()
 
 
 @router.get("/{namespace}/{name}")
-def get_deployment(namespace: str, name: str):
-    return DeploymentService.get_deployment(namespace, name)
+async def get_deployment(namespace: str, name: str):
+    return await DeploymentService.get_deployment_async(namespace, name)
 
 
 @router.patch("/{namespace}/{name}/image")
-def update_image(
+async def update_image(
     namespace: str,
     name: str,
     request: UpdateImageRequest,
 ):
-    return DeploymentService.update_image(
+    return await DeploymentService.update_image_async(
         namespace,
         name,
         request.image,
@@ -38,22 +38,22 @@ def update_image(
 
 
 @router.patch("/{namespace}/{name}/scale")
-def scale_deployment(
+async def scale_deployment(
     namespace: str,
     name: str,
     request: ScaleDeploymentRequest,
 ):
-    return DeploymentService.scale_deployment(
+    return await DeploymentService.scale_deployment_async(
         namespace,
         name,
         request.replicas,
     )
 @router.delete("/{namespace}/{name}")
-def delete_deployment(
+async def delete_deployment(
     namespace: str,
     name: str,
 ):
-    return DeploymentService.delete_deployment(
+    return await DeploymentService.delete_deployment_async(
         namespace,
         name,
     )
