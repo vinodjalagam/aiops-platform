@@ -19,7 +19,7 @@ class DashboardService:
         total_pods = len(pods)
         total_deployments = len(deployments)
         total_services = len(services)
-        
+
         namespaces = core_v1.list_namespace().items
         total_namespaces = len(namespaces)
 
@@ -31,10 +31,10 @@ class DashboardService:
 
         available_deployments = 0
         unavailable_deployments = 0
-        
+
         # Cluster Health
         ready_nodes = 0
-        
+
         for node in nodes:
             for condition in node.status.conditions:
                 if (
@@ -89,8 +89,15 @@ class DashboardService:
             else:
 
                 unavailable_deployments += 1
+
         cpu = 0
         memory = 0
+
+        cpu_used = 0
+        cpu_total = 0
+
+        memory_used = 0
+        memory_total = 0
 
         try:
 
@@ -173,15 +180,30 @@ class DashboardService:
             # -------------------------
             # Percentage
             # -------------------------
-
             if total_cpu_capacity:
                 cpu = round(
                     (total_cpu_usage / total_cpu_capacity) * 100
+                )
+                cpu_used = round(
+                    total_cpu_usage / 1000,
+                    2,
+                )
+                cpu_total = round(
+                    total_cpu_capacity / 1000,
+                    2,
                 )
 
             if total_memory_capacity:
                 memory = round(
                     (total_memory_usage / total_memory_capacity) * 100
+                )
+                memory_used = round(
+                    total_memory_usage,
+                    2,
+                )
+                memory_total = round(
+                    total_memory_capacity,
+                    2,
                 )
 
         except Exception as e:
@@ -229,7 +251,6 @@ class DashboardService:
             or restarting_pods > 0
             or warning_events > 0
         ):
-
             health_status = "Warning"
 
         if health_status == "Healthy":
@@ -270,8 +291,16 @@ class DashboardService:
                 "warning": warning_events,
                 "critical": critical_events,
             },
-            "cpu": cpu,
-            "memory": memory,
+            "cpu": {
+                "percentage": cpu,
+                "used": cpu_used,
+                "total": cpu_total,
+            },
+            "memory": {
+                "percentage": memory,
+                "used": memory_used,
+                "total": memory_total,
+            },
             "cluster_health": {
                 "score": cluster_health,
                 "status": health_status,

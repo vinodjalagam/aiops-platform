@@ -90,14 +90,13 @@ if (!node) {
             </p>
 
             <span
-              className={`inline-block mt-2 px-3 py-1 rounded-full text-sm font-semibold ${node.status === "True"
-                  ? "bg-green-500/20 text-green-400"
-                  : "bg-red-500/20 text-red-400"
-                }`}
-            >
-              {node.status === "True"
-                ? "Ready"
-                : "Not Ready"}
+className={`inline-block mt-2 px-3 py-1 rounded-full text-sm font-semibold ${
+  node.status === "Ready"
+    ? "bg-green-500/20 text-green-400"
+    : "bg-red-500/20 text-red-400"
+}`}
+>
+  {node.status}
             </span>
           </div>
 
@@ -203,7 +202,91 @@ if (!node) {
 
       </div>
 
-      {/* Allocatable */}
+{/* Root Cause */}
+
+{node.status === "Not Ready" && (
+
+  <div className="bg-red-950 border border-red-700 rounded-xl p-6 mb-6">
+
+    <h2 className="text-xl font-bold text-red-400 mb-6">
+      🚨 Root Cause Analysis
+    </h2>
+
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+      <div>
+
+        <p className="text-slate-400">
+          Reason
+        </p>
+
+        <p className="text-white font-semibold mt-1">
+          {node.ready_reason || "Unknown"}
+        </p>
+
+      </div>
+
+      <div>
+
+        <p className="text-slate-400">
+          Kubernetes Message
+        </p>
+
+        <p className="text-white mt-1">
+          {node.ready_message || "No message available"}
+        </p>
+
+      </div>
+
+    </div>
+
+    <div className="mt-6">
+
+<h3 className="text-lg font-semibold text-white mb-3">
+  {node.diagnosis.title}
+</h3>
+
+<p className="text-slate-300 mb-4">
+  {node.diagnosis.explanation}
+</p>
+
+<div className="mb-4">
+  <span
+    className={`px-3 py-1 rounded-full text-sm font-semibold ${
+      node.diagnosis.severity === "Critical"
+        ? "bg-red-500/20 text-red-400"
+        : node.diagnosis.severity === "Warning"
+        ? "bg-yellow-500/20 text-yellow-400"
+        : "bg-blue-500/20 text-blue-400"
+    }`}
+  >
+    {node.diagnosis.severity}
+  </span>
+</div>
+
+<h4 className="text-white font-semibold mb-2">
+  Recommended Actions
+</h4>
+
+<ul className="list-disc ml-5 space-y-2 text-slate-200">
+
+  {node.diagnosis.recommended_actions.map((action) => (
+
+    <li key={action}>
+      {action}
+    </li>
+
+  ))}
+
+</ul>
+
+    </div>
+
+  </div>
+
+)}      
+
+{/* Allocatable */}
 
       <div className="bg-slate-900 rounded-xl border border-slate-700 p-6">
 

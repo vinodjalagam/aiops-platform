@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { getDeployments } from "../services/deploymentService";
 import Loading from "../components/common/Loading";
@@ -15,7 +16,7 @@ interface Deployment {
 export default function Deployments() {
   const [deployments, setDeployments] = useState<Deployment[]>([]);
   const [loading, setLoading] = useState(true);
-
+const [search, setSearch] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -32,6 +33,19 @@ export default function Deployments() {
       setLoading(false);
     }
   };
+const filteredDeployments = deployments.filter(
+  (deployment) =>
+    deployment.name
+      .toLowerCase()
+      .includes(search.toLowerCase()) ||
+    deployment.namespace
+      .toLowerCase()
+      .includes(search.toLowerCase()) ||
+    deployment.strategy
+      .toLowerCase()
+      .includes(search.toLowerCase())
+);
+
 
 if (loading) {
     return <Loading text="Loading Deployments..." />;
@@ -51,8 +65,26 @@ if (loading) {
           Refresh
         </button>
       </div>
+{/* Search */}
 
-      <div className="bg-slate-900 rounded-lg overflow-hidden">
+<div className="relative mb-6">
+
+  <Search
+    className="absolute left-3 top-3 text-slate-400"
+    size={18}
+  />
+
+  <input
+    type="text"
+    placeholder="Search Deployments..."
+    value={search}
+    onChange={(e) => setSearch(e.target.value)}
+    className="w-full bg-slate-900 border border-slate-800 rounded-lg pl-10 pr-4 py-2 text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+  />
+
+</div>
+  
+    <div className="bg-slate-900 rounded-lg overflow-hidden">
 
         <table className="w-full">
 
@@ -80,8 +112,9 @@ if (loading) {
 
           <tbody>
 
-            {deployments.map((deployment) => (
+{filteredDeployments.length > 0 ? (
 
+  filteredDeployments.map((deployment) => (
               <tr
                 key={`${deployment.namespace}-${deployment.name}`}
                 className="border-t border-slate-700 hover:bg-slate-800 cursor-pointer"
@@ -122,10 +155,24 @@ if (loading) {
 
               </tr>
 
-            ))}
+))
 
-          </tbody>
+) : (
 
+<tr>
+
+  <td
+    colSpan={7}
+    className="text-center py-8 text-slate-400"
+  >
+    No Deployments Found
+  </td>
+
+</tr>
+
+)}
+
+</tbody>
         </table>
 
       </div>

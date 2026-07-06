@@ -14,12 +14,10 @@ export default function Namespaces() {
 
   const [search, setSearch] = useState("");
 
-  const filtered = namespaces.filter((namespace) =>
-    namespace.name
-      .toLowerCase()
-      .includes(search.toLowerCase())
-  );
-
+const filteredNamespaces = namespaces.filter((namespace) =>
+  namespace.name.toLowerCase().includes(search.toLowerCase()) ||
+  namespace.status.toLowerCase().includes(search.toLowerCase())
+);
 if (loading) {
     return <Loading text="Loading Namespaces..." />;
 }
@@ -92,26 +90,19 @@ if (loading) {
 
           <tbody>
 
-            {filtered.map((namespace) => (
+{filteredNamespaces.length > 0 ? (
 
-              <tr
-                key={namespace.name}
-                className="border-t border-slate-800 hover:bg-slate-800 transition"
-              >
-
-                <td className="p-4">
-
-                  <button
-                    onClick={() =>
-                      navigate(`/namespaces/${namespace.name}`)
-                    }
-                    className="text-blue-400 hover:text-blue-300 hover:underline font-semibold"
-                  >
-                    {namespace.name}
-                  </button>
-
-                </td>
-
+  filteredNamespaces.map((namespace) => (
+<tr
+  key={namespace.name}
+  onClick={() =>
+    navigate(`/namespaces/${namespace.name}`)
+  }
+  className="border-t border-slate-800 hover:bg-slate-800 cursor-pointer transition"
+>
+<td className="p-4 text-white font-medium">
+  {namespace.name}
+</td>
                 <td>
 
                   <span className="px-3 py-1 rounded-full bg-green-500/20 text-green-400 text-sm">
@@ -138,10 +129,24 @@ if (loading) {
 
               </tr>
 
-            ))}
+))
 
-          </tbody>
+) : (
 
+<tr>
+
+  <td
+    colSpan={6}
+    className="text-center py-8 text-slate-400"
+  >
+    No Namespaces Found
+  </td>
+
+</tr>
+
+)}
+
+</tbody>
         </table>
 
       </div>

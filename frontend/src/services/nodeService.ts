@@ -32,6 +32,15 @@ export interface RunningPod {
 export interface NodeDetails {
   name: string;
   status: string;
+  ready_reason: string;
+  ready_message: string;
+    diagnosis: {
+    severity: string;
+    title: string;
+    explanation: string;
+    recommended_actions: string[];
+  };
+
   os_image: string;
   kernel_version: string;
   container_runtime: string;

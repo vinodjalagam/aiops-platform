@@ -169,7 +169,12 @@ if (loading) {
 />
         <KpiCard
           title="CPU Usage"
-          value={`${dashboard?.cpu || 0}%`}
+value={`${dashboard?.cpu.percentage ?? 0}%`}
+trend={
+  dashboard
+    ? `${dashboard.cpu.used} / ${dashboard.cpu.total} Cores`
+    : "Live Metrics"
+}
           color="text-yellow-400"
           trend="Live Metrics"
           icon={<Cpu className="text-yellow-400" />}
@@ -177,7 +182,12 @@ if (loading) {
 
         <KpiCard
           title="Memory Usage"
-          value={`${dashboard?.memory || 0}%`}
+value={`${dashboard?.memory.percentage ?? 0}%`}
+trend={
+  dashboard
+    ? `${dashboard.memory.used.toFixed(0)} / ${dashboard.memory.total.toFixed(0)} Mi`
+    : "Live Metrics"
+}
           color="text-purple-400"
           trend="Live Metrics"
           icon={<MemoryStick className="text-purple-400" />}

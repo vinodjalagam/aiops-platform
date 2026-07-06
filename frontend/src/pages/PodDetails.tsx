@@ -729,27 +729,35 @@ if (!pod) {
           </div>
 
         </div>
-        {/* Pod Actions */}
+{/* Pod Actions */}
 
-        <div className="bg-slate-900 rounded-xl border border-slate-700 p-6">
+<div className="bg-slate-900 rounded-xl border border-slate-700 p-6">
 
-          <h2 className="text-2xl font-bold mb-6">
-            Pod Actions
-          </h2>
+  <h2 className="text-2xl font-bold mb-6">
+    Pod Actions
+  </h2>
 
-          <div className="flex gap-4">
+  <div className="flex gap-4">
 
-            <button
-              onClick={handleDeletePod}
-              className="bg-red-600 hover:bg-red-700 transition px-6 py-3 rounded-lg text-white font-semibold"
-            >
-              Delete Pod
-            </button>
+    <button
+      onClick={() =>
+        navigate(`/pods/${namespace}/${name}/logs`)
+      }
+      className="bg-indigo-600 hover:bg-indigo-700 transition px-6 py-3 rounded-lg text-white font-semibold"
+    >
+      View Logs
+    </button>
 
-          </div>
+    <button
+      onClick={handleDeletePod}
+      className="bg-red-600 hover:bg-red-700 transition px-6 py-3 rounded-lg text-white font-semibold"
+    >
+      Delete Pod
+    </button>
 
-        </div>
+  </div>
 
+</div>
         {/* Live Pod Logs */}
 
         <div className="bg-slate-900 rounded-xl border border-slate-700 p-6">

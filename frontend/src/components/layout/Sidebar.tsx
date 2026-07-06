@@ -24,7 +24,6 @@ const menuItems = [
   { name: "Services", path: "/services", icon: Network },
   { name: "Namespaces", path: "/namespaces",icon: Layers3,},
   { name: "Metrics", path: "/metrics", icon: Activity },
-  { name: "Logs", path: "/logs", icon: FileText },
   { name: "Incidents", path: "/incidents", icon: AlertTriangle },
   { name: "Alerts", path: "/alerts", icon: Bell },
   { name: "AI Assistant", path: "/assistant", icon: Bot },
