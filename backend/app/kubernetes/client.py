@@ -5,6 +5,18 @@ config.load_kube_config(
     config_file=os.path.expanduser("~/.kube/config")
 )
 
-core_v1 = client.CoreV1Api()
-apps_v1 = client.AppsV1Api()
-version_api = client.VersionApi()
+
+def get_core_v1():
+    return client.CoreV1Api()
+
+
+def get_apps_v1():
+    return client.AppsV1Api()
+
+
+def get_version_api():
+    return client.VersionApi()
+
+
+def get_custom_objects_api():
+    return client.CustomObjectsApi()

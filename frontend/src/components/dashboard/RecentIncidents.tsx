@@ -12,7 +12,7 @@ export default function RecentIncidents() {
   }
 
   // Hide Kubernetes system namespace incidents from dashboard
-  const dashboardIncidents = incidents.filter(
+  const dashboardIncidents = (incidents ?? []).filter(
     (incident) =>
       ![
         "kube-system",
